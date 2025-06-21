@@ -1,0 +1,56 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+.container{
+    display: flex;
+    align-items: center;
+     flex-direction: column;
+    height: 70vh;
+    width: 25vw;
+    border: 1px solid black;
+    background-color: #c7b8b8;
+}
+
+.head{
+    margin-top: 5px;
+}
+.user, .pass{
+    display: flex;
+    width: 23vw;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+h3 {
+    flex: 1;
+    margin-right: 10px;
+}
+input {
+    flex: 2; 
+}
+
+ .sub{
+    display: flex;
+    width: 23vw;
+    justify-content:center;
+    margin-bottom: 5px;
+    margin-top: 20px;
+    height: 4vh;
+}
+
+button{
+    width: 22vw;
+    background-color: green;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+}

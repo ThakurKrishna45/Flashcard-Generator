@@ -19,9 +19,19 @@ async function main() {
   await mongoose.connect(url+dbName);
 }
 main();
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+app.post('/', async (req, res) => {
+  const{username, password}= req.body;
+  const user= await User.findOne({username});
+  if(!user){
+    return res.status(401).json({success: false, message: 'Invalid credential'});
+  }
+  const isMatch= await (password == user.password);
+  if(!isMatch){
+    return res.status(401).json({success: false, message: 'Invalid credential'});
+  }
+  res.status(201).json({message:'Login Successful'});
 })
+
 app.post('/registration',async (req,res)=>{
   try {
     const { username, password, fullName, gmail } = req.body;
@@ -38,7 +48,6 @@ app.post('/registration',async (req,res)=>{
     res.status(201).json({ message: 'User registered successfully!' });
   } catch (error) {
     if (error.code === 11000) {
-      // Duplicate key error (username or gmail already exists)
       if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({ error: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists.` });
