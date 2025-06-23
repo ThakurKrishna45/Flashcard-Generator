@@ -19,7 +19,7 @@ async function main() {
   await mongoose.connect(url+dbName);
 }
 main();
-app.post('/', async (req, res) => {
+app.post('/login', async (req, res) => {
   const{username, password}= req.body;
   const user= await User.findOne({username});
   if(!user){
