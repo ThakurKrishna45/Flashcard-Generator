@@ -5,6 +5,7 @@ function Flashcard() {
     const [text, setText] = useState('');
     const [wordCount, setWordCount] = useState(0);
     const [error, setError] = useState('');
+    const [flashcard,setFlashcard]=useState([]);
     const maxWords = 10000;
 
     useEffect(() => {
@@ -18,6 +19,15 @@ function Flashcard() {
             setError('');
         }
     }, [text]);
+
+    useEffect(()=>{
+        const fetchFlashCard=async ()=>{
+            const response =await fetch('http://localhost:5000/');
+            const data = await response.json();
+            setFlashcard(data);
+        }
+        fetchFlashCard();
+    },[])
 
     const handleChange = (e) => {
         const newtext = e.target.value;
@@ -60,16 +70,21 @@ function Flashcard() {
                     </div>
             </div>
             <div className="flashcard">
-                <div className="ques">
+                 {flashcard.map((card) => (
+                <div className="div" key={card._id}>
+                <div className="ques" >
                     <h2>Questions</h2>
-                    <p>i am question?</p>
+                    <p>{card.question}</p>
                 </div>
                 <div className="divider"></div>
                 <div className="ans">
                     <h2>Answer</h2>
-                    <p>I am answer</p>
+                     <p>{card.answer}</p>
                     </div>
+                    </div>
+))}
             </div>
+
         </div>
         </>
     )
