@@ -7,11 +7,12 @@ body {
 }
 .parent{
     height:90vh;
-    width: 90vw;
+    width: 95vw;
     display: flex;
     flex-direction: row; 
     justify-content: space-between;
-    align-items: center
+    align-items: center;
+    gap: 3vw;
 }
 .container{
     width: 50vw;
@@ -38,7 +39,7 @@ textarea {
   background-color: #2c094c;
   color: #ffffff;
   font-size: 1rem;
-  resize: vertical;
+  /* resize: vertical; */
 }
 
 .box{
@@ -75,14 +76,25 @@ button:hover {
 
 /* Flashcard section */
 .flashcard {
-  margin-top: 40px;
   background: #ffcc66;
   color: #1a1a40;
   border: 2px solid #ff9933;
   border-radius: 16px;
   padding: 20px 30px;
-  max-width: 700px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  height: 60vh;
+  scroll-behavior: auto;
+  overflow-y: scroll;
+  width: 45vw;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.flashcard::-webkit-scrollbar {
+  display: none; /* Hide scrollbar */
+}
+/* Hide scrollbar for Firefox */
+.flashcard {
+  scrollbar-width: none; /* Hide scrollbar */
 }
 
 /* Flashcard content */

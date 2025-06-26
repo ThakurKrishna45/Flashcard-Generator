@@ -24,7 +24,8 @@ function Flashcard() {
         const fetchFlashCard=async ()=>{
             const response =await fetch('http://localhost:5000/');
             const data = await response.json();
-            setFlashcard(data);
+            console.log(data);
+            setFlashcard(data.flashcards || []);
         }
         fetchFlashCard();
     },[])

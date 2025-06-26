@@ -5,4 +5,12 @@ const flashSchema = new mongoose.Schema({
   answer: { type: String,trim: true },
 });
 
-module.exports = mongoose.model('Flash', flashSchema);
+const headSchema= new mongoose.Schema({
+  topic:{type: String, unique: true},
+  flashcards: [flashSchema],
+})
+
+module.exports = {
+  Flash: mongoose.model('Flash', flashSchema),
+  Head: mongoose.model('Head', headSchema)
+};

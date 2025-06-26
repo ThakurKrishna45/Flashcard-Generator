@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Flash = require('./models/flash');
+const {Flash,Head} = require('./models/flash');
 const dotenv = require('dotenv');
 const axios = require('axios'); 
 
@@ -97,7 +97,12 @@ app.post('/', async (req, res) => {
                 console.error('Raw content received:', contentText);
                 return res.status(500).json({ message: 'Error parsing API response content. The AI might not have returned valid JSON.', error: parseError.message });
             }
-
+             const count = await Head.countDocuments();
+        const newTopic = `topic${count + 1}`;
+            const newHead = new Head({
+            topic: newTopic,
+            flashcards: []
+        });
           
             if (Array.isArray(qAndA)) {
                
@@ -106,11 +111,12 @@ app.post('/', async (req, res) => {
                     if (question && answer) {
                         const qaEntry = new Flash({ question, answer });
                         await qaEntry.save();
+                        newHead.flashcards.push(qaEntry);
                     } else {
                         console.warn('Skipping an item due to missing question or answer:', item);
                     }
                 }
-                
+                 await newHead.save();
                 res.status(200).json({ message: 'Questions and answers generated and saved successfully.' });
             } else {
                 
@@ -130,9 +136,11 @@ app.post('/', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
+    const count = await Head.countDocuments();
+        const newTopic = `topic${count}`;
     try {
-        const flashcards = await Flash.find({}); // Fetch all documents from the Flash collection
-        res.status(200).json(flashcards); // Send them as a JSON response
+        const flashcard = await Head.findOne({ topic: newTopic });
+        res.status(200).json(flashcard); // Send them as a JSON response
     } catch (error) {
         console.error('Error fetching flashcards:', error);
         res.status(500).json({ message: 'Error fetching flashcards.', error: error.message });
