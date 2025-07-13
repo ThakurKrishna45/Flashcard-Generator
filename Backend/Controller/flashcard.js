@@ -1,8 +1,5 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const {Flash,Head} = require('./models/flash');
+// const bodyParser = require('body-parser');
+const {Flash,Head} = require('../models/flash');
 const dotenv = require('dotenv');
 const axios = require('axios'); 
 
@@ -10,32 +7,13 @@ const axios = require('axios');
 dotenv.config();
 
 
-const app = express();
-
-app.use(cors());
-
-const PORT = 5000;
-
-app.use(bodyParser.json());
-
-const url = 'mongodb://localhost:27017/';
-const dbName = 'study';
+// app.use(bodyParser.json());
 
 
-async function main() {
-    try {
-        await mongoose.connect(url + dbName);
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.error('Failed to connect to MongoDB:', error);
-        process.exit(1); 
-    }
-}
-
-main();
 
 
-app.post('/', async (req, res) => {
+// app.post('/', async (req, res) => {
+    const flashgenPost= async(req,res)=>{
 
     const { text } = req.body;
     if (!text) {
@@ -133,9 +111,10 @@ app.post('/', async (req, res) => {
         console.error('Error generating content:', error);
         res.status(500).json({ message: 'Error generating questions and answers.', error: error.message });
     }
-});
+};
 
-app.get('/', async (req, res) => {
+// app.get('/', async (req, res) => {
+     const flashgenGet= async(req,res)=>{
     const count = await Head.countDocuments();
         const newTopic = `topic${count}`;
     try {
@@ -145,8 +124,10 @@ app.get('/', async (req, res) => {
         console.error('Error fetching flashcards:', error);
         res.status(500).json({ message: 'Error fetching flashcards.', error: error.message });
     }
-});
+};
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+module.exports={
+    flashgenGet,
+    flashgenPost
+}
