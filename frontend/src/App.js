@@ -3,15 +3,25 @@ import './App.css';
 import Registration from './Components/registration'; 
 import Login from './Components/login';
 import Flashcard from './Components/flashcard';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import RefreshHandler from './Components/RefreshHandler';
+import AllFlashcard from './Components/AllFlashcard';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated]= useState(false);
+  const PrivateRoute=({element})=>{
+    return isAuthenticated? element : <Navigate to='/login'/>
+  }
   return (
     <Router>
+      <RefreshHandler setIsAuthenticated={setIsAuthenticated}/>
       <Routes>
-        <Route path="/Registration" element={<Registration />}></Route>
-         <Route path="/Login" element={<Login />}></Route>
-         <Route path='/' element={<Flashcard/>}></Route>
+        <Route path='/' element={<Navigate to="/login"/>}/>
+        <Route path="/registration" element={<Registration />}></Route>
+         <Route path="/login" element={<Login />}></Route>
+         <Route path='/flashcardGen' element={<PrivateRoute element={<Flashcard/>}/>}></Route>
+          <Route path='/flashcard'  element={<AllFlashcard/>}></Route>
       </Routes>
     </Router>
   );

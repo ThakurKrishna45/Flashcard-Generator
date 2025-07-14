@@ -1,0 +1,30 @@
+.container {
+    height: 10vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333; /* Dark background for the navbar */
+    color: white; /* Text color */
+    font-family: Arial, sans-serif; /* Font style */
+}
+
+.flash {
+    font-size: 18px; /* Font size for the "View All" text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: color 0.3s; /* Smooth transition for hover effect */
+}
+
+.flash:hover {
+    color: #ffcc00; /* Change color on hover */
+}
+
+.logout {
+    font-size: 16px; /* Font size for the "Logout" text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: color 0.3s; /* Smooth transition for hover effect */
+}
+
+.logout:hover {
+    color: #ffcc00; /* Change color on hover */
+}

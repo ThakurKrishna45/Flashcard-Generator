@@ -53,11 +53,11 @@ const login=async (req, res) => {
  try{ const{username, password}= req.body;
   const user= await User.findOne({username});
   if(!user){
-    return res.status(401).json({success: false, message: 'Invalid credential'});
+    return res.status(401).json({success: false, message: 'Invalid credential user'});
   }
   const isMatch= await bcrypt.compare(password, user.password);
   if(!isMatch){
-    return res.status(401).json({success: false, message: 'Invalid credential'});
+    return res.status(401).json({success: false, message: 'Invalid credential password'});
   }
   
   const jwtToken=jwt.sign(
@@ -68,7 +68,7 @@ const login=async (req, res) => {
   console.log(jwtToken)
   res.status(200).json({message:'Login Successful',
     success: true,
-    jwtToken,
+    token:jwtToken,
     email:user.email,
     name:user.fullName
   });}

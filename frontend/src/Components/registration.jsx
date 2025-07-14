@@ -1,6 +1,6 @@
 import { useState, React } from "react";
 import './reg.css';
-
+import {useNavigate} from 'react-router-dom';
 function Registration(){
 const [formData, setFormData]= useState({
     username:"",
@@ -8,6 +8,9 @@ const [formData, setFormData]= useState({
     gmail:"",
     password:""
 });
+
+  const navigate= useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -23,7 +26,7 @@ const handleSubmit = async (event) => {
   };
 
   try {
-    const response = await fetch('http://localhost:5000/registration', {
+    const response = await fetch('http://localhost:5000/auth/registration', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,6 +37,9 @@ const handleSubmit = async (event) => {
     const data = await response.json();
     if (response.ok) {
       alert('Registration successful!');
+      setTimeout(()=>{
+        navigate('/login')
+      },1000)
     } else {
       alert(data.error||'Registration failed!');
     }

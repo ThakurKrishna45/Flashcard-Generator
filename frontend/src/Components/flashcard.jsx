@@ -1,12 +1,17 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import './flashcard.css';
+import Navbar from "./Navbar";
 
 function Flashcard() {
     const [text, setText] = useState('');
     const [wordCount, setWordCount] = useState(0);
     const [error, setError] = useState('');
-    const [flashcard,setFlashcard]=useState([]);
+    const [flashcard, setFlashcard] = useState([]);
+    const [topic, setTopic] = useState('');
+     const [isEditing, setIsEditing] = useState(false);
     const maxWords = 10000;
+
+    const originalTopic = useRef("");
 
     useEffect(() => {
         const words = text.trim(/\s+/);
@@ -20,15 +25,63 @@ function Flashcard() {
         }
     }, [text]);
 
-    useEffect(()=>{
-        const fetchFlashCard=async ()=>{
-            const response =await fetch('http://localhost:5000/');
+    useEffect(() => {
+        const fetchFlashCard = async () => {
+            const token = localStorage.getItem('token')
+            const headers = {
+                headers: { 'Authorization': `Bearer ${token}` },
+            }
+             const topicToFetch = topic || originalTopic.current ;
+           console.log(`topic: ${topic}`);
+console.log(`originalTopic: ${originalTopic.current}`);
+if(!topic){
+    return;
+}
+            const response = await fetch(`http://localhost:5000/api/getOne?topic=${encodeURIComponent(topicToFetch)}`, headers);
             const data = await response.json();
-            console.log(data);
+            setTopic(data.topic)
+             originalTopic.current = data.topic
             setFlashcard(data.flashcards || []);
         }
         fetchFlashCard();
-    },[])
+    }, [topic])
+
+          const handleToggleEdit = async () => {
+    if (isEditing && topic.trim() !== originalTopic.current) {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch("http://localhost:5000/api/generate/", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            oldTitle: originalTopic.current,
+            newTitle: topic.trim(),
+          }),
+        });
+           if (res.status === 409) {
+          // server chose 409 Conflict when title already exists
+          alert("Title already exists");
+          setTopic(originalTopic.current); // roll back
+          setIsEditing(false);
+          return;
+        }
+        console.log(res);
+        if (!res.ok) throw new Error("Update failed");
+
+        originalTopic.current = topic.trim(); // success → update ref
+      } catch (error) {
+        console.log(error);
+        alert("Something went wrong while renaming the deck.");
+        setTopic(originalTopic.current);
+      }
+    }
+
+    // Finally flip editing state
+    setIsEditing(!isEditing);
+  };
 
     const handleChange = (e) => {
         const newtext = e.target.value;
@@ -40,53 +93,84 @@ function Flashcard() {
         setText(newtext);
     };
 
-    const handleClick= async (e)=>{
+    const handleClick = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:5000/', {
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                body: JSON.stringify({text}),
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:5000/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ text }),
         });
         const data = await response.json();
+        console.log(data)
+        setTopic(data.topic);
         alert('hello');
     }
 
     return (
         <>
-        <div className="parent">
-            <div className="container">
-                <h1>Generate Flashcard</h1>
-                <textarea
-                    value={text}
-                    onChange={handleChange}
-                    rows="20"
-                    cols="50"
-                    placeholder="Type your text here..."
+            <Navbar></Navbar>
+            <div className="parent">
+                <div className="container">
+                    <h1>Generate Flashcard</h1>
+                    <textarea
+                        value={text}
+                        onChange={handleChange}
+                        rows="20"
+                        cols="50"
+                        placeholder="Type your text here..."
                     />
                     <div className="box">
                         <div className="char-count">{wordCount}/10000</div>
                         <div>  <button onClick={handleClick}>Generate</button></div>
                     </div>
-            </div>
-            <div className="flashcard">
-                 {flashcard.map((card) => (
-                <div className="div" key={card._id}>
-                <div className="ques" >
-                    <h2>Questions</h2>
-                    <p>{card.question}</p>
                 </div>
-                <div className="divider"></div>
-                <div className="ans">
-                    <h2>Answer</h2>
-                     <p>{card.answer}</p>
-                    </div>
-                    </div>
-))}
-            </div>
 
-        </div>
+                <div className="flashcard">
+                    <div className="title">
+                        <h2>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={topic}
+                                    onChange={(e) => setTopic(e.target.value)}
+                                    autoFocus
+                                />
+                            ) : (
+                                topic
+                            )}
+                        </h2>
+                        <button onClick={() => setIsEditing(handleToggleEdit)}>
+                            {isEditing ? 'Save' : 'Edit Title'}
+                        </button>
+                    </div>
+
+                    {flashcard.length === 0 ? (
+                        <div className="empty-message">
+                            <h2>Your questions and answers will be displayed here.</h2>
+                        </div>
+                    ) :
+                        (flashcard.map((card) => (
+                            <div className="div" key={card._id}>
+                                <div className="divider"></div>
+                                <div className="ques" >
+                                    <h2>Questions</h2>
+                                    <p>{card.question}</p>
+                                </div>
+
+                                <div className="ans">
+                                    <h2>Answer</h2>
+                                    <p>{card.answer}</p>
+                                </div>
+                                <div className="divider"></div>
+                            </div>
+                        )))}
+                </div>
+
+            </div>
         </>
     )
 } export default Flashcard;

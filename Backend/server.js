@@ -25,7 +25,7 @@ main();
 
 
 app.use('/auth', authRoutes);
-app.use('/', dashboard);
+app.use('/api', dashboard);
 
 
 

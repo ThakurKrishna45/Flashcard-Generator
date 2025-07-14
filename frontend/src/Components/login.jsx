@@ -1,11 +1,14 @@
 import {React, useState} from "react";
 import './login.css';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData]=useState({
         userName:"",
         password:""
     });
+
+    const navigate= useNavigate();
 
  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,25 +17,36 @@ function Login() {
   const handleSubmit=async (event)=>{
     event.preventDefault();
 
-      const formData = {
-    username: event.target.username.value,
-    password: event.target.password.value,
-  };
+     const formDataToSubmit = {
+      username: formData.username,
+      password: formData.password.trim(),
+    };
 
-  const response = await fetch('http://localhost:5000/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
+  try {
+    const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formDataToSubmit),
+      });
+  
+      const data = await response.json();
+      console.log(data)
       if (response.ok) {
+        localStorage.setItem('token', data.token);
       alert('Login successful!');
+       setTimeout(()=>{
+        navigate('/flashcardGen')
+      },1000)
     } else {
+      console.error('Login failed:', data);
       alert(data.error||'Login failed!');
     }
+        
+  } catch (error) {
+    console.log(error) 
+  }
 
   }
 

@@ -113,3 +113,36 @@ button:hover {
   border-top: 1px solid #ff9933;
   margin: 10px 0;
 }
+
+
+.title {
+  
+  color: #107d43;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* padding: 10px; */
+  justify-content: space-between;
+  border-radius: 5px;
+}
+
+.title input {
+  padding: 5px;
+
+  border: 1px solid #ccc;
+ 
+  border-radius: 3px;
+}
+
+.title button {
+  padding: 5px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.title button:hover {
+  background: #45a049;
+}
