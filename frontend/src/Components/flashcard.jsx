@@ -125,7 +125,7 @@ if(!topic){
                     />
                     <div className="box">
                         <div className="char-count">{wordCount}/10000</div>
-                        <div>  <button onClick={handleClick}>Generate</button></div>
+                        <div>  <button className="gen_button" onClick={handleClick}>Generate</button></div>
                     </div>
                 </div>
 

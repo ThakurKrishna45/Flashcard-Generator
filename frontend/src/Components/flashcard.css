@@ -57,7 +57,7 @@ textarea {
 }
 
 /* Generate button */
-button {
+.gen_button {
   background: linear-gradient(135deg, #3a7bd5, #00d2ff);
   color: white;
   padding: 12px 30px;
@@ -67,7 +67,7 @@ button {
   cursor: pointer;
   transition: transform 0.2s ease;
   float: right;
-  width: 10vw;
+  width: 8vw;
 }
 
 button:hover {
@@ -141,6 +141,7 @@ button:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 8vw;
 }
 
 .title button:hover {

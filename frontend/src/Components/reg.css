@@ -46,7 +46,7 @@ input {
     height: 4vh;
 }
 
-button{
+.reg_button{
     width: 22vw;
     background-color: green;
     font-size: 1rem;

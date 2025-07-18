@@ -16,6 +16,7 @@ dotenv.config();
 const flashgenPost = async (req, res) => {
 
     const { text } = req.body;
+    const userId = req.user.id;  
     if (!text) {
         return res.status(400).json({ message: 'Input text is required.' });
     }
@@ -88,7 +89,8 @@ const flashgenPost = async (req, res) => {
 
             const newHead = new Head({
                 topic: newTopic,
-                flashcards: []
+                flashcards: [],
+                user: userId, 
             });
 
             if (Array.isArray(qAndA)) {
@@ -127,7 +129,7 @@ const flashgenGet = async (req, res) => {
     const count = await Head.countDocuments();
     const newTopic = req.query.topic || `topic${count}`;
     try {
-        const flashcard = await Head.findOne({ topic: newTopic });
+        const flashcard = await Head.findOne({user: req.user.id, topic: newTopic });
         res.status(200).json(flashcard); // Send them as a JSON response
     } catch (error) {
         console.error('Error fetching flashcards:', error);
@@ -137,8 +139,12 @@ const flashgenGet = async (req, res) => {
 
 const flashGetAll = async (req, res) => {
     try {
-        const flashcards = await Head.find(); // Fetch all flashcards
-        res.status(200).json(flashcards); // Send them as a JSON response
+        // console.log(req.user.id)
+        const flashcards = await Head.find({ user: req.user.id })
+                            .select('topic')        
+                            .lean(); 
+                            // console.log(flashcards)
+        res.status(200).json(flashcards);
     } catch (error) {
         console.error('Error fetching all flashcards:', error);
         res.status(500).json({ message: 'Error fetching all flashcards.', error: error.message });
@@ -156,11 +162,11 @@ const titleChange = async (req, res) => {
 
     try {
 
-        const duplicate = await Head.exists({ topic: newTitle });
+        const duplicate = await Head.exists({ topic: newTitle ,});
         if (duplicate)
             return res.status(409).json({ message: "Title already exists." });
         const renamedDeck = await Head.findOneAndUpdate(
-            { topic: oldTitle },
+            { topic: oldTitle,  user: req.user.id },
             { topic: newTitle },
             { new: true }          // return the updated doc
         );
@@ -173,9 +179,27 @@ const titleChange = async (req, res) => {
         res.status(500).json({ message: "Server error.", error: err.message });
     }
 };
+
+const flashDelete= async (req,res)=> {
+    const id = req.params.id;
+   
+    try {
+        if(!Head.exists(id)){
+            console.log("Not")
+        }
+        const del= await Head.findOneAndDelete({ topic: id, user: req.user.id });
+         console.log(del);
+        res.status(200).json({message:`Successfuly deleted ${id}`})
+    } catch (error) {
+        console.log("Unable to delete", error);
+        res.status(500).json({message:"Server Error"},error.message);
+    }
+}
+
 module.exports = {
     flashgenGet,
     flashgenPost,
     flashGetAll,
-    titleChange
+    titleChange,
+    flashDelete
 }

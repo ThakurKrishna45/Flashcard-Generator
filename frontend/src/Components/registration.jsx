@@ -5,7 +5,7 @@ function Registration(){
 const [formData, setFormData]= useState({
     username:"",
     fullName:"",
-    gmail:"",
+    email:"",
     password:""
 });
 
@@ -22,8 +22,17 @@ const handleSubmit = async (event) => {
     username: event.target.username.value,
     password: event.target.password.value,
     fullName: event.target.fullName.value,
-    gmail: event.target.gmail.value,
+    email: event.target.email.value,
   };
+  if (formData.username.length < 3) {
+      alert("Username must be at least 3 characters");
+      return;
+    }
+
+if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters");
+      return;
+    }
 
   try {
     const response = await fetch('http://localhost:5000/auth/registration', {
@@ -41,7 +50,7 @@ const handleSubmit = async (event) => {
         navigate('/login')
       },1000)
     } else {
-      alert(data.error||'Registration failed!');
+      alert(data.message||'Registration failed!');
     }
   } catch (error) {
     alert('Error: ' + error.message);
@@ -79,9 +88,9 @@ return(
                 <h3>E-mail:</h3>
             <input
             type="email"
-            id="gmail"
-            name="gmail"
-            value={formData.gmail}
+            id="email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}>
             </input>
             </div>
@@ -98,7 +107,7 @@ return(
             </div>
 
             <div className="sub">
-            <button type="submit">Submit</button>
+            <button className="reg_button" type="submit">Submit</button>
             </div>
         </form>
     </div>

@@ -52,7 +52,7 @@ function Login() {
 
     return(
         <>
-        <div className="container">
+        <div className="login_container">
             <div className="head">
             <h1>Login</h1>
             </div>
@@ -80,7 +80,7 @@ function Login() {
             </div>
 
             <div className="sub">
-            <button type="submit">Submit</button>
+            <button className="login_button" type="submit">Submit</button>
             </div>
 
             </form>

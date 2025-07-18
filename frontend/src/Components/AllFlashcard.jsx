@@ -4,8 +4,8 @@ import styles from './AllFlashcard.module.css'
 
 const AllFlashcard = () => {
 
-        const [topic,setTopic]=useState("");
-        const [flashcard, setFlashcard]= useState([]);
+    const [topic, setTopic] = useState("");
+    const [flashcard, setFlashcard] = useState([]);
 
     //     useEffect(() => {
     //         const fetchFlashCard = async () => {
@@ -27,45 +27,71 @@ const AllFlashcard = () => {
     //         }
     //         fetchFlashCard();
     //     }, [topic])
-
-    useEffect(() => {
-       const loadData= async() => {
-           const token = localStorage.getItem('token')
-                const headers = {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                }
-            
-            const response = await  fetch(`http://localhost:5000/api/all`, headers);
+    const loadData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = {
+                headers: { 'Authorization': `Bearer ${token}` },
+            };
+            const response = await fetch(`http://localhost:5000/api/all`, headers);
             const data = await response.json();
-            setFlashcard(data||[]);
+            setFlashcard(data || []);
+        } catch (error) {
+            
         }
+    };
+    useEffect(() => {
         loadData();
-          }, []);
-  return (
-    <>
-    <Navbar></Navbar>
-    <div className={styles.container}>
-          {/* <div className="title">
-                    <h2>No topic to display</h2>
-                </div>
-                <div className={styles.buttons}>
-                    <button>View</button>
-                    <button>Delete</button>
-                </div> */}
-        {flashcard.map((card)=>
-         <div className={styles.flashcard} key={card._id}>
-                <div className="title">
-                    <h2>{card.topic}</h2>
-                </div>
-                <div className={styles.buttons}>
-                    <button>View</button>
-                    <button>Delete</button>
-                </div>
+    }, []);
+
+    const handleDelete = async (idToDelete) => {
+        const token = localStorage.getItem('token');
+        const url = `http://localhost:5000/api/delete/${idToDelete}`
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+            )
+            if (response.ok) {
+                const data = await response.json(); // Parse the response JSON
+                console.log('Resource deleted successfully!', data.message);
+                loadData();
+                // Optionally, you can update the UI or state here
+            } else {
+                const errorData = await response.json(); // Get error details
+                console.error('Failed to delete resource:', errorData.message);
+            }
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    }
+
+    return (
+        <>
+            <Navbar></Navbar>
+            <div className={styles.container}>
+                {flashcard.length === 0 ? (
+                    <><div className={styles.flashcard} >
+                        <h2>No topic to display</h2>
+                    </div></>) :
+                    (flashcard.map((card) =>
+                        <div className={styles.flashcard} key={card._id}>
+                            <div className="title">
+                                <h2>{card.topic}</h2>
+                            </div>
+                            <div className={styles.buttons}>
+                                <button>View</button>
+                                <button onClick={() => handleDelete(card.topic)}>Delete</button>
+                            </div>
+                        </div>
+                    ))}
             </div>
-        )}
-    </div>
-    </>
-  )
+        </>
+    )
 }
 
 export default AllFlashcard

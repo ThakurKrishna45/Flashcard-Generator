@@ -6,6 +6,8 @@
   
   const signup=async(req,res)=>{
   try {
+    console.log(await User.countDocuments({ gmail: null }))
+    // await User.deleteMany({ gmail: null });
     const { username, password, fullName, email } = req.body;
     const u= await User.findOne({username})
     if(u){
@@ -28,10 +30,10 @@
      const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      username,
+      username: username,
       password: hashedPassword,
-      fullName,
-      email,
+      fullName: fullName,
+      email: email,
     });
 
     await newUser.save();

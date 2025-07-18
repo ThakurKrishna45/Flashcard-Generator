@@ -1,25 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './Navbar.module.css'; // Assuming you renamed Navbar.css to Navbar.module.css
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+// const Navbar = () => {
+ 
+    
+//   return (
+//     <div className={styles.container}>
+//         <div className={styles.flash}>View All</div>
+//         <div className={styles.logout}>
+//             <button onClick={handleLogOut}>LogOut</button>
+//         </div>
+//     </div>
+//   );
+// }
 const Navbar = () => {
-    const Navigate= useNavigate();
+  const location = useLocation();
+    //  const Navigate= useNavigate();
+    const navigate = useNavigate();
+
     const handleLogOut=() => {
       localStorage.removeItem('token');
       window.alert("Logout! Successfull")
       setTimeout(()=>{
-        Navigate('/login');
+        navigate('/login');
       },1000);
     }
-    
+  const [currentPage, setCurrentPage] = useState(location.pathname);
+ 
+  // const navigateToHome = () => {
+  //   navigate('/');
+  //   setCurrentPage('/');
+  // };
+  // const navigateToProfile = () => {
+  //   navigate('/profile');
+  //   setCurrentPage('/profile');
+  // };
+ 
+
   return (
     <div className={styles.container}>
-        <div className={styles.flash}>View All</div>
-        <div className={styles.logout}>
-            <button onClick={handleLogOut}>LogOut</button>
-        </div>
+      {currentPage === '/flashcardGen' ? (
+        <button className={styles.profileBtn} onClick={() => navigate('/flashcard')}>
+          All Cards
+        </button>
+      ) : (
+        <button className={styles.homeBtn} onClick={() => navigate('/flashcardGen')}>
+          Home
+        </button>
+      )}
+      <div>
+        <button className={styles.Navbar_logoutBtn} onClick={handleLogOut}>
+          LogOut
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 export default Navbar;
+
+
+
