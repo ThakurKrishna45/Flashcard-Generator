@@ -1,23 +1,45 @@
 const mongoose = require('mongoose');
-const { Head } = require('./models/flash');
+const { Flash, Head ,Newhead} = require('./models/flash');
 const User = require('./models/user'); // your user model
 
-async function assignUserToExistingDecks() {
+async function migrate() {
     const url= 'mongodb://localhost:27017/'
 
 const dbName='study';
   await mongoose.connect(url+dbName);
 
-  const user = await User.findOne({ email: 'krishna@gmail.com' }); // or use _id
-  if (!user) throw new Error('Test user not found');
+  try {
+  const heads = await Head.find().populate('flashcards');
 
-  const result = await Head.updateMany(
-    { user: { $exists: false } }, // only update old documents
-    { $set: { user: user._id } }
-  );
+  for (const head of heads) {
+    if (Array.isArray(head.flashcards) && head.flashcards.length > 0) {
+      const embeddedFlashcards = head.flashcards.map(flash => ({
+        question: flash.question,
+        answer: flash.answer
+      }));
 
-  console.log(`${result.modifiedCount} decks updated`);
+      const newHead = new Newhead({
+        topic: head.topic,
+        user: head.user,
+        flashcards: embeddedFlashcards
+      });
+
+      await newHead.save();
+      console.log(`✅ Migrated: ${head.topic}`);
+    } else {
+      console.warn(`⚠️ Skipped (no flashcards): ${head.topic}`);
+    }
+  }
+
+  // Optional: clear old flashes after verifying
+  // await Flash.deleteMany({});
+  console.log('✅ Migration complete.');
+} catch (err) {
+  console.error('❌ Migration failed:', err);
+}
+
+
   mongoose.disconnect();
 }
 
-assignUserToExistingDecks();
+migrate();

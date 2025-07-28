@@ -6,8 +6,7 @@
   
   const signup=async(req,res)=>{
   try {
-    console.log(await User.countDocuments({ gmail: null }))
-    // await User.deleteMany({ gmail: null });
+  
     const { username, password, fullName, email } = req.body;
     const u= await User.findOne({username})
     if(u){
@@ -65,9 +64,9 @@ const login=async (req, res) => {
   const jwtToken=jwt.sign(
     {username: user.username, _id:user._id},
     process.env.JWT_SECRET,
-    {expiresIn: '24h'}
+    {expiresIn: '365d'}
   )
-  console.log(jwtToken)
+ 
   res.status(200).json({message:'Login Successful',
     success: true,
     token:jwtToken,

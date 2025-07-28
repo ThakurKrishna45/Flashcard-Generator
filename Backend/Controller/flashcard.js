@@ -1,5 +1,5 @@
 // const bodyParser = require('body-parser');
-const { Flash, Head } = require('../models/flash');
+const { Head } = require('../models/flash');
 const dotenv = require('dotenv');
 const axios = require('axios');
 
@@ -7,12 +7,12 @@ const axios = require('axios');
 dotenv.config();
 
 
-// app.use(bodyParser.json());
 
 
 
 
-// app.post('/', async (req, res) => {
+
+
 const flashgenPost = async (req, res) => {
 
     const { text } = req.body;
@@ -60,7 +60,7 @@ const flashgenPost = async (req, res) => {
             }
         );
 
-        console.log('API Response:', JSON.stringify(response.data, null, 2));
+        // console.log('API Response:', JSON.stringify(response.data, null, 2));
 
         const candidates = response.data.candidates;
         if (candidates && candidates.length > 0 && candidates[0].content && candidates[0].content.parts && candidates[0].content.parts.length > 0) {
@@ -76,7 +76,7 @@ const flashgenPost = async (req, res) => {
                 console.error('Raw content received:', contentText);
                 return res.status(500).json({ message: 'Error parsing API response content. The AI might not have returned valid JSON.', error: parseError.message });
             }
-            const count = await Head.countDocuments();
+          
             const now = new Date();
             const pad = (n) => String(n).padStart(2, '0');
 
@@ -98,9 +98,10 @@ const flashgenPost = async (req, res) => {
                 for (const item of qAndA) {
                     const { question, answer } = item;
                     if (question && answer) {
-                        const qaEntry = new Flash({ question, answer });
-                        await qaEntry.save();
-                        newHead.flashcards.push(qaEntry);
+                        newHead.flashcards.push({ question, answer });
+                        // const qaEntry = new Flash({ question, answer });
+                        // await qaEntry.save();
+                        // newHead.flashcards.push(qaEntry);
                     } else {
                         console.warn('Skipping an item due to missing question or answer:', item);
                     }
@@ -124,7 +125,7 @@ const flashgenPost = async (req, res) => {
     }
 };
 
-// app.get('/', async (req, res) => {
+
 const flashgenGet = async (req, res) => {
     const count = await Head.countDocuments();
     const newTopic = req.query.topic || `topic${count}`;
@@ -139,11 +140,11 @@ const flashgenGet = async (req, res) => {
 
 const flashGetAll = async (req, res) => {
     try {
-        // console.log(req.user.id)
+      
         const flashcards = await Head.find({ user: req.user.id })
                             .select('topic')        
                             .lean(); 
-                            // console.log(flashcards)
+                            
         res.status(200).json(flashcards);
     } catch (error) {
         console.error('Error fetching all flashcards:', error);
@@ -185,10 +186,10 @@ const flashDelete= async (req,res)=> {
    
     try {
         if(!Head.exists(id)){
-            console.log("Not")
+            console.log("head not exist")
         }
         const del= await Head.findOneAndDelete({ topic: id, user: req.user.id });
-         console.log(del);
+      
         res.status(200).json({message:`Successfuly deleted ${id}`})
     } catch (error) {
         console.log("Unable to delete", error);

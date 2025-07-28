@@ -1,32 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import styles from './AllFlashcard.module.css'
+import { useNavigate } from 'react-router-dom';
 
 const AllFlashcard = () => {
 
     const [topic, setTopic] = useState("");
     const [flashcard, setFlashcard] = useState([]);
-
-    //     useEffect(() => {
-    //         const fetchFlashCard = async () => {
-    //             const token = localStorage.getItem('token')
-    //             const headers = {
-    //                 headers: { 'Authorization': `Bearer ${token}` },
-    //             }
-    //              const topicToFetch = topic ;
-    // //            console.log(`topic: ${topic}`);
-    // // console.log(`originalTopic: ${originalTopic.current}`);
-    // if(!topic){
-    //     return;
-    // }
-    //             const response = await fetch(`http://localhost:5000/api/getOne?topic=${encodeURIComponent(topicToFetch)}`, headers);
-    //             const data = await response.json();
-    //             setTopic(data.topic)
-    //              originalTopic.current = data.topic
-    //             setFlashcard(data.flashcards || []);
-    //         }
-    //         fetchFlashCard();
-    //     }, [topic])
+    const navigate= useNavigate();
+   
     const loadData = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -34,8 +16,12 @@ const AllFlashcard = () => {
                 headers: { 'Authorization': `Bearer ${token}` },
             };
             const response = await fetch(`http://localhost:5000/api/all`, headers);
+            if(response.status==401){
+                localStorage.removeItem('token');
+            }
             const data = await response.json();
             setFlashcard(data || []);
+
         } catch (error) {
             
         }
@@ -70,6 +56,10 @@ const AllFlashcard = () => {
         }
     }
 
+    const handleView= async (topic) => {
+        navigate(`/view?topic=${encodeURIComponent(topic)}`);
+    }
+
     return (
         <>
             <Navbar></Navbar>
@@ -84,7 +74,7 @@ const AllFlashcard = () => {
                                 <h2>{card.topic}</h2>
                             </div>
                             <div className={styles.buttons}>
-                                <button>View</button>
+                                <button onClick={() => handleView(card.topic)}>View</button>
                                 <button onClick={() => handleDelete(card.topic)}>Delete</button>
                             </div>
                         </div>

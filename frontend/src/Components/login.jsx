@@ -1,6 +1,8 @@
 import {React, useState} from "react";
 import './login.css';
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
+
 
 function Login() {
   const [formData, setFormData]=useState({
@@ -32,7 +34,7 @@ function Login() {
       });
   
       const data = await response.json();
-      console.log(data)
+ 
       if (response.ok) {
         localStorage.setItem('token', data.token);
       alert('Login successful!');
@@ -40,7 +42,7 @@ function Login() {
         navigate('/flashcardGen')
       },1000)
     } else {
-      console.error('Login failed:', data);
+      console.error('Login failed:');
       alert(data.error||'Login failed!');
     }
         
@@ -80,9 +82,12 @@ function Login() {
             </div>
 
             <div className="sub">
-            <button className="login_button" type="submit">Submit</button>
+            <button className="login_button" type="submit">Login</button>
             </div>
-
+            <div className="regi">
+              <span>New User?</span>
+               <Link to="/registration" className="login-link">Register</Link>
+            </div>
             </form>
         </div>
         </>

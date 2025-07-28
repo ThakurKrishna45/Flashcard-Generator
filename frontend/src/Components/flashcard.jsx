@@ -32,8 +32,7 @@ function Flashcard() {
                 headers: { 'Authorization': `Bearer ${token}` },
             }
              const topicToFetch = topic || originalTopic.current ;
-           console.log(`topic: ${topic}`);
-console.log(`originalTopic: ${originalTopic.current}`);
+          
 if(!topic){
     return;
 }
@@ -68,7 +67,7 @@ if(!topic){
           setIsEditing(false);
           return;
         }
-        console.log(res);
+       
         if (!res.ok) throw new Error("Update failed");
 
         originalTopic.current = topic.trim(); // success → update ref
@@ -104,8 +103,11 @@ if(!topic){
             },
             body: JSON.stringify({ text }),
         });
+        if(response.status==401){
+                localStorage.removeItem('token');
+            }
         const data = await response.json();
-        console.log(data)
+       
         setTopic(data.topic);
         alert('hello');
     }
@@ -115,6 +117,7 @@ if(!topic){
             <Navbar></Navbar>
             <div className="parent">
                 <div className="container">
+                    <div>
                     <h1>Generate Flashcard</h1>
                     <textarea
                         value={text}
@@ -128,9 +131,19 @@ if(!topic){
                         <div>  <button className="gen_button" onClick={handleClick}>Generate</button></div>
                     </div>
                 </div>
+                </div>
 
                 <div className="flashcard">
-                    <div className="title">
+                  
+
+                    {flashcard.length === 0 ? (
+                        <div className="empty-message">
+                            <h2>Your questions and answers will be displayed here.</h2>
+                        </div>
+                    ) :
+                        ( 
+                            <>
+                        <div className="title">
                         <h2>
                             {isEditing ? (
                                 <input
@@ -147,13 +160,7 @@ if(!topic){
                             {isEditing ? 'Save' : 'Edit Title'}
                         </button>
                     </div>
-
-                    {flashcard.length === 0 ? (
-                        <div className="empty-message">
-                            <h2>Your questions and answers will be displayed here.</h2>
-                        </div>
-                    ) :
-                        (flashcard.map((card) => (
+                           { flashcard.map((card) => (
                             <div className="div" key={card._id}>
                                 <div className="divider"></div>
                                 <div className="ques" >
@@ -167,7 +174,9 @@ if(!topic){
                                 </div>
                                 <div className="divider"></div>
                             </div>
-                        )))}
+                              
+                        ))}
+                        </>)}
                 </div>
 
             </div>

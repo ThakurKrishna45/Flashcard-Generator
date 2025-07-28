@@ -11,6 +11,7 @@ body{
     font-family: Arial, sans-serif;
 }
 .login_container{
+    background-color: rgb(186, 206, 224);
     display: flex;
     align-items: center;
      flex-direction: column;
@@ -19,8 +20,9 @@ body{
     border: 1px solid black;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     border: 2px solid #ff9933;
-    border-radius: 5px;
+    border-radius: 15px;
     align-items: center;
+    color: black;
 }
 
 .head{
@@ -52,11 +54,28 @@ input {
 }
 
 .login_button{
-    width: 10vw;
-    min-height: 5vh;
-   background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    width: 90%;
+    min-height: 3vh;
+   background: linear-gradient(135deg, #3a7bd5, #2e25d0);
     font-size: 1rem;
     font-weight: 900;
     cursor: pointer;
     border-radius: 5px;
+}
+
+.regi {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px; 
+  margin-top: 1rem; 
+}
+
+.login-link {
+  text-decoration: none; 
+  font-weight: 500;
+}
+
+.login-link:hover {
+    cursor: pointer;
 }

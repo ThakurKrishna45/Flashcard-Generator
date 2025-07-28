@@ -7,9 +7,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState } from 'react';
 import RefreshHandler from './Components/RefreshHandler';
 import AllFlashcard from './Components/AllFlashcard';
+import Viewcard from './Components/viewcard';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated]= useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('token');
+  });
   const PrivateRoute=({element})=>{
     return isAuthenticated? element : <Navigate to='/login'/>
   }
@@ -21,7 +24,8 @@ function App() {
         <Route path="/registration" element={<Registration />}></Route>
          <Route path="/login" element={<Login />}></Route>
          <Route path='/flashcardGen' element={<PrivateRoute element={<Flashcard/>}/>}></Route>
-          <Route path='/flashcard'  element={<AllFlashcard/>}></Route>
+          <Route path='/flashcard'  element={<PrivateRoute element={<AllFlashcard/>}/>}></Route>
+          <Route path='/view'  element={<PrivateRoute element={<Viewcard/>}/>}></Route>
       </Routes>
     </Router>
   );

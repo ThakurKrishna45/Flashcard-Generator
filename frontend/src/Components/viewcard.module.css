@@ -1,0 +1,47 @@
+
+.c{
+  display: flex;
+  justify-content: center;
+}
+/* Flashcard section */
+.flashcard {
+  background: #ffcc66;
+  color: #1a1a40;
+  border: 2px solid #ff9933;
+  border-radius: 16px;
+  padding: 20px 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  height: 90vh;
+  scroll-behavior: auto;
+  overflow-y: scroll;
+  width: 70vw;
+  margin-top: 5px;
+}
+
+/* Divider */
+.divider {
+  border-top: 1px solid #ff9933;
+  margin: 10px 0;
+}
+
+
+.title {
+
+  color: #107d43;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* padding: 10px; */
+  justify-content: space-between;
+  border-radius: 5px;
+}
+
+
+/* Hide scrollbar for WebKit browsers */
+.flashcard::-webkit-scrollbar {
+  display: none; /* Hide scrollbar */
+}
+/* Hide scrollbar for Firefox */
+.flashcard {
+  scrollbar-width: none; /* Hide scrollbar */
+}

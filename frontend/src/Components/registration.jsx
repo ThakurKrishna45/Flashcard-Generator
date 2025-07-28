@@ -1,6 +1,6 @@
 import { useState, React } from "react";
 import './reg.css';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, Link} from 'react-router-dom';
 function Registration(){
 const [formData, setFormData]= useState({
     username:"",
@@ -58,7 +58,7 @@ if (formData.password.length < 8) {
 };
 return(
     <>
-    <div className="container">
+    <div className="containe">
         <h1 className="head">Registration</h1>
         <br/>
         <form onSubmit={handleSubmit}>
@@ -108,6 +108,10 @@ return(
 
             <div className="sub">
             <button className="reg_button" type="submit">Submit</button>
+            </div>
+            <div className="log">
+              <span>Already have account?</span>
+               <Link to="/login" className="login-link">Login</Link>
             </div>
         </form>
     </div>

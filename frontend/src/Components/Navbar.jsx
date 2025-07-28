@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
-import styles from './Navbar.module.css'; // Assuming you renamed Navbar.css to Navbar.module.css
+import styles from './Navbar.module.css'; 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-// const Navbar = () => {
- 
-    
-//   return (
-//     <div className={styles.container}>
-//         <div className={styles.flash}>View All</div>
-//         <div className={styles.logout}>
-//             <button onClick={handleLogOut}>LogOut</button>
-//         </div>
-//     </div>
-//   );
-// }
+
 const Navbar = () => {
   const location = useLocation();
     //  const Navigate= useNavigate();
@@ -28,25 +17,16 @@ const Navbar = () => {
     }
   const [currentPage, setCurrentPage] = useState(location.pathname);
  
-  // const navigateToHome = () => {
-  //   navigate('/');
-  //   setCurrentPage('/');
-  // };
-  // const navigateToProfile = () => {
-  //   navigate('/profile');
-  //   setCurrentPage('/profile');
-  // };
- 
 
   return (
     <div className={styles.container}>
-      {currentPage === '/flashcardGen' ? (
-        <button className={styles.profileBtn} onClick={() => navigate('/flashcard')}>
-          All Cards
+      {currentPage === '/flashcard' ? (
+        <button className={styles.homeBtn} onClick={() => navigate('/flashcardGen')}>
+          Generate
         </button>
       ) : (
-        <button className={styles.homeBtn} onClick={() => navigate('/flashcardGen')}>
-          Home
+        <button className={styles.profileBtn} onClick={() => navigate('/flashcard')}>
+          All Cards
         </button>
       )}
       <div>

@@ -13,6 +13,9 @@ const ensureAuth=(req,res,next)=>{
         next()
     }catch(error){
         console.log(error)
+         if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired. Please login again.' });
+    }
          return res.status(403).json({messgae:'Unauthorized'});
     }
 }
