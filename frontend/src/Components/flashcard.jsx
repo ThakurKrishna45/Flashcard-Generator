@@ -12,6 +12,7 @@ function Flashcard() {
     const maxWords = 10000;
 
     const originalTopic = useRef("");
+     const typingTimeout = useRef(null);
 
     useEffect(() => {
         const words = text.trim(/\s+/);
@@ -25,28 +26,30 @@ function Flashcard() {
         }
     }, [text]);
 
-    useEffect(() => {
-        const fetchFlashCard = async () => {
+
+    // useEffect(() => {
+        const fetchFlashCard = async (topicToFetch) => {
             const token = localStorage.getItem('token')
             const headers = {
                 headers: { 'Authorization': `Bearer ${token}` },
             }
-             const topicToFetch = topic || originalTopic.current ;
+            //  const topicToFetch = topic || originalTopic.current ;
           
-if(!topic){
-    return;
-}
+                if(!topicToFetch){
+                    return;
+                }
             const response = await fetch(`http://localhost:5000/api/getOne?topic=${encodeURIComponent(topicToFetch)}`, headers);
             const data = await response.json();
             setTopic(data.topic)
              originalTopic.current = data.topic
             setFlashcard(data.flashcards || []);
         }
-        fetchFlashCard();
-    }, [topic])
+    //     fetchFlashCard();
+    // }, [topic])
 
           const handleToggleEdit = async () => {
     if (isEditing && topic.trim() !== originalTopic.current) {
+       
       try {
         const token = localStorage.getItem('token');
         const res = await fetch("http://localhost:5000/api/generate/", {
@@ -61,24 +64,23 @@ if(!topic){
           }),
         });
            if (res.status === 409) {
-          // server chose 409 Conflict when title already exists
+        
           alert("Title already exists");
-          setTopic(originalTopic.current); // roll back
+          setTopic(originalTopic.current); 
           setIsEditing(false);
           return;
         }
        
         if (!res.ok) throw new Error("Update failed");
 
-        originalTopic.current = topic.trim(); // success → update ref
+        originalTopic.current = topic.trim();
+         fetchFlashCard(topic.trim());
       } catch (error) {
         console.log(error);
-        alert("Something went wrong while renaming the deck.");
+        // alert("Something went wrong while renaming the deck.");
         setTopic(originalTopic.current);
       }
     }
-
-    // Finally flip editing state
     setIsEditing(!isEditing);
   };
 
@@ -92,24 +94,65 @@ if(!topic){
         setText(newtext);
     };
 
-    const handleClick = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:5000/api/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ text }),
+     //  const handleClick = async (e) => {
+    //     e.preventDefault();
+    //     const token = localStorage.getItem('token')
+    //     const response = await fetch('http://localhost:5000/api/generate', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${token}`
+    //         },
+    //         body: JSON.stringify({ text }),
+    //     });
+    //     if(response.status==401){
+    //             localStorage.removeItem('token');
+    //         }
+    //     const data = await response.json();
+    //     setTopic(data.topic);
+    //     fetchFlashCard(data.topic);
+        
+    // }
+    const handleClick = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        const resp = await fetch('http://localhost:5000/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ text }), // send the editor text to backend
         });
-        if(response.status==401){
-                localStorage.removeItem('token');
-            }
-        const data = await response.json();
-       
-        setTopic(data.topic);
-        alert('hello');
+
+        const raw = await resp.text();
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = { message: raw };
+        }
+
+        if (!resp.ok) {
+          const msg = data.error || data.message || `Request failed (${resp.status})`;
+          setError(msg);
+          alert(msg);
+          return;
+        }
+
+        // success
+        setError('');
+        const newTopic = data.topic || topic || originalTopic.current;
+        setTopic(newTopic);
+        // refresh the flashcard list for the new/returned topic
+        fetchFlashCard(newTopic);
+      } catch (err) {
+        console.error('Network/fetch failed', err);
+        const msg = 'Network error: ' + err.message;
+        setError(msg);
+        alert(msg);
+      }
     }
 
     return (

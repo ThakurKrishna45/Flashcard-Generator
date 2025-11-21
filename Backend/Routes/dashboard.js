@@ -1,11 +1,15 @@
-const { flashgenPost, flashgenGet, titleChange, flashGetAll, flashDelete } = require('../Controller/flashcard');
+const express = require('express');
+const router = express.Router();
+const flashController = require('../Controller/flashcard');
 const ensureAuth = require('../Middleware/auth');
 
-const router= require('express').Router();
+// helper to wrap async route handlers and forward errors to next()
+const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-router.post('/generate',ensureAuth,flashgenPost);
-router.get('/getOne',ensureAuth,flashgenGet);
-router.put('/generate',ensureAuth,titleChange);
-router.get('/all',ensureAuth,flashGetAll)
-router.delete('/delete/:id',ensureAuth,flashDelete)
-module.exports= router;
+router.post('/generate', ensureAuth, asyncHandler(flashController.flashgenPost));
+
+router.get('/getOne', ensureAuth, flashController.flashgenGet);
+router.put('/generate', ensureAuth, flashController.titleChange);
+router.get('/all', ensureAuth, flashController.flashGetAll);
+router.delete('/delete/:id', ensureAuth, flashController.flashDelete);
+module.exports = router;
